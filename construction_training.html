@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏗️ Барилгын Компани - Дотоод Портал</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        :root {
+            --primary: #E67E22;
+            --primary-dark: #D35400;
+            --primary-light: #F39C12;
+            --secondary: #2C3E50;
+            --secondary-dark: #1A252F;
+            --accent: #27AE60;
+            --danger: #E74C3C;
+            --warning: #F1C40F;
+            --bg: #F5F6FA;
+            --card: #FFFFFF;
+            --text: #2C3E50;
+            --text-light: #7F8C8D;
+            --border: #E8E8E8;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+            --shadow-hover: 0 8px 30px rgba(230,126,34,0.2);
+            --radius: 14px;
+        }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+        /* ============ LOGIN PAGE ============ */
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--secondary-dark) 0%, var(--secondary) 50%, #34495E 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .login-page::before {
+            content: '';
+            position: absolute;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(230,126,34,0.15), transparent 70%);
+            top: -200px; right: -200px;
+        }
+        .login-page::after {
+            content: '';
+            position: absolute;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(39,174,96,0.1), transparent 70%);
+            bottom: -100px; left: -100px;
+        }
+        .login-box {
+            background: rgba(255,255,255,0.97);
+            border-radius: 20px;
+            padding: 48px 40px;
+            width: 420px;
+            max-width: 95%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+        .login-logo { font-size: 3rem; margin-bottom: 8px; }
+        .login-box h1 { font-size: 1.5rem; font-weight: 800; color: var(--secondary); margin-bottom: 4px; }
+        .login-box .subtitle { font-size: 0.85rem; color: var(--text-light); margin-bottom: 32px; }
+        .login-box .form-group { margin-bottom: 18px; text-align: left; }
+        .login-box label { font-size: 0.82rem; font-weight: 600; color: var(--text); display: block; margin-bottom: 6px; }
+        .login-box input {
+            width: 100%; padding: 12px 16px; border: 2px solid var(--border); border-radius: 10px;
+            font-size: 0.92rem; outline: none; transition: border-color 0.2s;
+        }
+        .login-box input:focus { border-color: var(--primary); }
+        .login-btn {
+            width: 100%; padding: 14px; border: none; border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: #fff; font-size: 1rem; font-weight: 700; cursor: pointer;
+            transition: all 0.3s; margin-top: 8px;
+        }
+        .login-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(230,126,34,0.4); }
+        .login-error { color: var(--danger); font-size: 0.82rem; margin-top: 12px; display: none; }
+        .login-hint { font-size: 0.75rem; color: var(--text-light); margin-top: 20px; padding: 12px; background: #f8f9fa; border-radius: 8px; }
+
+        /* ============ APP LAYOUT ============ */
+        .app { display: none; min-height: 100vh; }
+        .app.active { display: flex; }
+
+        /* Sidebar */
+        .sidebar {
+            width: 270px; background: linear-gradient(180deg, var(--secondary-dark), var(--secondary));
+            color: #fff; position: fixed; top: 0; left: 0; height: 100vh;
+            overflow-y: auto; z-index: 100; transition: transform 0.3s;
+        }
+        .sidebar-brand {
+            padding: 24px 20px; background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            text-align: center;
+        }
+        .sidebar-brand .brand-icon { font-size: 2.2rem; }
+        .sidebar-brand h2 { font-size: 1rem; font-weight: 700; margin-top: 6px; }
+        .sidebar-brand p { font-size: 0.72rem; opacity: 0.85; margin-top: 2px; }
+
+        .sidebar-user {
+            padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex; align-items: center; gap: 12px;
+        }
+        .sidebar-user .avatar {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: var(--primary); display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 1rem;
+        }
+        .sidebar-user .user-info { flex: 1; }
+        .sidebar-user .user-info h4 { font-size: 0.85rem; font-weight: 600; }
+        .sidebar-user .user-info p { font-size: 0.7rem; opacity: 0.7; }
+
+        .nav-section { padding: 12px 0; }
+        .nav-label {
+            font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1.5px;
+            color: rgba(255,255,255,0.35); padding: 8px 20px; font-weight: 700;
+        }
+        .nav-btn {
+            display: flex; align-items: center; padding: 11px 20px; cursor: pointer;
+            transition: all 0.2s; border: none; background: none; color: rgba(255,255,255,0.75);
+            width: 100%; font-size: 0.88rem; text-align: left; font-family: inherit;
+        }
+        .nav-btn:hover { background: rgba(255,255,255,0.08); color: #fff; }
+        .nav-btn.active { background: rgba(230,126,34,0.25); color: var(--primary-light); border-left: 3px solid var(--primary); }
+        .nav-btn .nav-icon { width: 28px; font-size: 1.05rem; }
+        .nav-btn .nav-badge {
+            margin-left: auto; background: var(--primary); color: #fff;
+            padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: 600;
+        }
+        .logout-btn {
+            margin: 16px 20px; padding: 10px; border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 10px; background: none; color: rgba(255,255,255,0.7);
+            cursor: pointer; font-size: 0.82rem; width: calc(100% - 40px); transition: all 0.2s;
+            font-family: inherit; text-align: center;
+        }
+        .logout-btn:hover { background: rgba(231,76,60,0.3); border-color: var(--danger); color: #fff; }
+
+        /* Main */
+        .main-content { margin-left: 270px; flex: 1; min-height: 100vh; }
+
+        /* Topbar */
+        .topbar {
+            background: #fff; padding: 14px 28px; display: flex; align-items: center;
+            justify-content: space-between; box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+            position: sticky; top: 0; z-index: 50;
+        }
+        .topbar-left { display: flex; align-items: center; gap: 12px; }
+        .menu-toggle { display: none; background: none; border: none; font-size: 1.4rem; cursor: pointer; }
+        .page-title { font-size: 1.15rem; font-weight: 700; }
+        .topbar-search {
+            display: flex; align-items: center; background: var(--bg); border-radius: 10px;
+            padding: 8px 14px; width: 300px;
+        }
+        .topbar-search input {
+            border: none; background: none; outline: none; margin-left: 8px;
+            font-size: 0.85rem; width: 100%; color: var(--text);
+        }
+
+        /* Content */
+        .page-content { padding: 24px 28px; }
+        .page { display: none; }
+        .page.active { display: block; }
+
+        /* Stats */
+        .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 18px; margin-bottom: 28px; }
+        .stat-card {
+            background: #fff; border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow);
+            display: flex; align-items: center; gap: 14px; transition: transform 0.2s;
+        }
+        .stat-card:hover { transform: translateY(-2px); }
+        .stat-icon {
+            width: 48px; height: 48px; border-radius: 12px; display: flex;
+            align-items: center; justify-content: center; font-size: 1.3rem;
+        }
+        .stat-card h3 { font-size: 1.5rem; font-weight: 800; }
+        .stat-card p { font-size: 0.75rem; color: var(--text-light); margin-top: 2px; }
+
+        /* Cards */
+        .card { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; margin-bottom: 18px; }
+        .card-header {
+            padding: 18px 22px; display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+        }
+        .card-header h3 { font-size: 1rem; font-weight: 700; }
+        .card-body { padding: 22px; }
+
+        /* Buttons */
+        .btn {
+            padding: 9px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-size: 0.84rem; font-weight: 600; transition: all 0.2s;
+            display: inline-flex; align-items: center; gap: 6px; font-family: inherit;
+        }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: #fff; }
+        .btn-primary:hover { box-shadow: 0 4px 15px rgba(230,126,34,0.4); transform: translateY(-1px); }
+        .btn-secondary { background: var(--bg); color: var(--text); }
+        .btn-secondary:hover { background: #e2e5e9; }
+        .btn-success { background: var(--accent); color: #fff; }
+        .btn-success:hover { background: #219A52; }
+        .btn-danger { background: var(--danger); color: #fff; }
+        .btn-danger:hover { background: #C0392B; }
+        .btn-sm { padding: 6px 12px; font-size: 0.78rem; }
+        .btn-outline { background: none; border: 2px solid var(--primary); color: var(--primary); }
+        .btn-outline:hover { background: var(--primary); color: #fff; }
+
+        /* Forms */
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 5px; }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%; padding: 10px 14px; border: 2px solid var(--border); border-radius: 10px;
+            font-size: 0.88rem; outline: none; transition: border-color 0.2s; font-family: inherit;
+        }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--primary); }
+        .form-group textarea { resize: vertical; min-height: 100px; }
+
+        /* Modal */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 200; align-items: center; justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: #fff; border-radius: 18px; width: 90%; max-width: 600px;
+            max-height: 90vh; overflow-y: auto; animation: modalIn 0.3s;
+        }
+        @keyframes modalIn { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform: translateY(0); } }
+        .modal-head {
+            padding: 20px 24px; border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .modal-head h3 { font-size: 1.05rem; font-weight: 700; }
+        .modal-close {
+            width: 32px; height: 32px; border-radius: 50%; border: none;
+            background: var(--bg); cursor: pointer; font-size: 1rem; transition: background 0.2s;
+        }
+        .modal-close:hover { background: #ddd; }
+        .modal-body { padding: 24px; }
+        .modal-foot { padding: 14px 24px 20px; display: flex; gap: 10px; justify-content: flex-end; }
+
+        /* Table */
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+        th { font-weight: 700; color: var(--text-light); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        tr:hover td { background: rgba(245,246,250,0.5); }
+
+        /* Training Grid */
+        .training-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap: 20px; }
+        .training-card {
+            background: #fff; border-radius: var(--radius); overflow: hidden;
+            box-shadow: var(--shadow); transition: all 0.3s; cursor: pointer;
+        }
+        .training-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
+        .training-thumb {
+            height: 140px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem;
+            position: relative;
+        }
+        .training-thumb .t-badge {
+            position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.5);
+            color: #fff; padding: 3px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 600;
+        }
+        .training-body { padding: 16px 18px; }
+        .training-body h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 5px; }
+        .training-body p { font-size: 0.8rem; color: var(--text-light); margin-bottom: 12px; line-height: 1.4; }
+        .training-footer { display: flex; align-items: center; justify-content: space-between; }
+        .t-cat {
+            font-size: 0.7rem; padding: 3px 10px; border-radius: 6px; font-weight: 600; color: #fff;
+        }
+        .t-date { font-size: 0.72rem; color: var(--text-light); }
+
+        /* Post */
+        .post-card {
+            background: #fff; border-radius: var(--radius); box-shadow: var(--shadow);
+            margin-bottom: 20px; overflow: hidden; transition: all 0.2s;
+        }
+        .post-card.pinned { border-left: 4px solid var(--primary); }
+        .post-header { padding: 18px 22px; display: flex; align-items: flex-start; gap: 14px; }
+        .post-avatar {
+            width: 42px; height: 42px; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; flex-shrink: 0;
+        }
+        .post-meta { flex: 1; }
+        .post-meta h4 { font-size: 0.9rem; font-weight: 600; }
+        .post-meta .meta-line { font-size: 0.75rem; color: var(--text-light); margin-top: 2px; }
+        .post-meta .meta-line .pin-badge { color: var(--primary); font-weight: 600; margin-left: 8px; }
+        .post-content { padding: 0 22px 18px; }
+        .post-content h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
+        .post-content .post-text { font-size: 0.88rem; line-height: 1.7; color: #444; white-space: pre-wrap; }
+        .post-content .post-cat-badge {
+            display: inline-block; padding: 3px 10px; border-radius: 6px;
+            font-size: 0.72rem; font-weight: 600; margin-bottom: 10px; color: #fff;
+        }
+        .post-actions {
+            padding: 12px 22px; border-top: 1px solid var(--border);
+            display: flex; gap: 16px;
+        }
+        .post-actions button {
+            background: none; border: none; cursor: pointer; font-size: 0.82rem;
+            color: var(--text-light); display: flex; align-items: center; gap: 5px;
+            font-family: inherit; transition: color 0.2s;
+        }
+        .post-actions button:hover { color: var(--primary); }
+
+        /* Comments */
+        .comments-section {
+            padding: 0 22px 18px; border-top: 1px solid var(--border);
+            margin-top: 0; display: none;
+        }
+        .comments-section.open { display: block; }
+        .comments-section h4 { font-size: 0.88rem; font-weight: 600; margin: 14px 0 12px; }
+        .comment-item {
+            display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f5f5f5;
+        }
+        .comment-avatar {
+            width: 32px; height: 32px; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; flex-shrink: 0;
+        }
+        .comment-body { flex: 1; }
+        .comment-body .c-name { font-size: 0.8rem; font-weight: 600; }
+        .comment-body .c-date { font-size: 0.7rem; color: var(--text-light); }
+        .comment-body .c-text { font-size: 0.83rem; margin-top: 3px; line-height: 1.5; }
+        .comment-body .c-delete { font-size: 0.72rem; color: var(--danger); cursor: pointer; background: none; border: none; margin-top: 3px; font-family: inherit; }
+        .comment-form { display: flex; gap: 10px; margin-top: 12px; }
+        .comment-form input {
+            flex: 1; padding: 9px 14px; border: 2px solid var(--border); border-radius: 10px;
+            font-size: 0.84rem; outline: none; font-family: inherit;
+        }
+        .comment-form input:focus { border-color: var(--primary); }
+
+        /* Dropzone */
+        .dropzone {
+            border: 2px dashed #ccc; border-radius: 12px; padding: 30px; text-align: center;
+            cursor: pointer; transition: all 0.3s; background: #fafafa;
+        }
+        .dropzone:hover, .dropzone.dragover { border-color: var(--primary); background: rgba(230,126,34,0.05); }
+        .dropzone .dz-icon { font-size: 2rem; margin-bottom: 8px; }
+        .dropzone p { font-size: 0.85rem; color: var(--text-light); }
+        .file-list { margin-top: 10px; }
+        .file-item {
+            display: flex; align-items: center; padding: 8px 12px; background: var(--bg);
+            border-radius: 8px; margin-bottom: 6px; font-size: 0.82rem;
+        }
+        .file-item .f-icon { margin-right: 8px; }
+        .file-item .f-name { flex: 1; font-weight: 500; }
+        .file-item .f-size { color: var(--text-light); margin-right: 8px; font-size: 0.75rem; }
+        .file-item .f-remove { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 0.9rem; }
+
+        /* Viewer */
+        .viewer-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 300; flex-direction: column;
+        }
+        .viewer-overlay.active { display: flex; }
+        .viewer-top {
+            padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; color: #fff;
+        }
+        .viewer-top h3 { font-size: 0.95rem; font-weight: 600; }
+        .viewer-frame { flex: 1; padding: 10px; display: flex; align-items: center; justify-content: center; }
+        .viewer-frame iframe { width: 95%; height: 100%; border: none; border-radius: 8px; background: #fff; }
+        .viewer-frame .no-viewer { color: #fff; text-align: center; }
+        .viewer-frame .no-viewer .nv-icon { font-size: 4rem; margin-bottom: 12px; }
+
+        /* Detail page */
+        .detail-back { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; cursor: pointer; color: var(--primary); font-weight: 600; font-size: 0.9rem; background: none; border: none; font-family: inherit; }
+        .detail-back:hover { text-decoration: underline; }
+
+        .material-item {
+            display: flex; align-items: center; background: #fff; padding: 16px 20px;
+            border-radius: 12px; margin-bottom: 10px; box-shadow: var(--shadow); transition: all 0.2s;
+        }
+        .material-item:hover { transform: translateX(4px); }
+        .mat-icon {
+            width: 46px; height: 46px; border-radius: 10px; display: flex;
+            align-items: center; justify-content: center; font-size: 1.3rem; margin-right: 14px; flex-shrink: 0;
+        }
+        .mat-info { flex: 1; }
+        .mat-info h4 { font-size: 0.9rem; font-weight: 600; }
+        .mat-info p { font-size: 0.75rem; color: var(--text-light); margin-top: 2px; }
+        .mat-actions { display: flex; gap: 8px; }
+
+        /* Color helpers */
+        .bg-orange { background: rgba(230,126,34,0.12); }
+        .bg-blue { background: rgba(52,152,219,0.12); }
+        .bg-green { background: rgba(39,174,96,0.12); }
+        .bg-red { background: rgba(231,76,60,0.12); }
+        .bg-purple { background: rgba(142,68,173,0.12); }
+        .bg-yellow { background: rgba(241,196,15,0.12); }
+        .grad-orange { background: linear-gradient(135deg, #E67E22, #F39C12); }
+        .grad-blue { background: linear-gradient(135deg, #2980B9, #3498DB); }
+        .grad-green { background: linear-gradient(135deg, #27AE60, #2ECC71); }
+        .grad-red { background: linear-gradient(135deg, #E74C3C, #EC7063); }
+        .grad-purple { background: linear-gradient(135deg, #8E44AD, #9B59B6); }
+        .grad-teal { background: linear-gradient(135deg, #16A085, #1ABC9C); }
+
+        /* Empty state */
+        .empty { text-align: center; padding: 50px 20px; }
+        .empty .e-icon { font-size: 3.5rem; margin-bottom: 12px; }
+        .empty h3 { font-size: 1rem; font-weight: 600; margin-bottom: 6px; }
+        .empty p { font-size: 0.85rem; color: var(--text-light); margin-bottom: 16px; }
+
+        /* Toast */
+        .toast {
+            position: fixed; bottom: 28px; right: 28px; padding: 14px 22px; border-radius: 12px;
+            color: #fff; font-size: 0.85rem; font-weight: 500; z-index: 999;
+            animation: tIn 0.3s, tOut 0.3s 2.5s forwards;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        .toast-ok { background: linear-gradient(135deg, #27AE60, #2ECC71); }
+        .toast-err { background: linear-gradient(135deg, #E74C3C, #EC7063); }
+        @keyframes tIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes tOut { from { opacity:1; } to { opacity:0; } }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .menu-toggle { display: block; }
+            .topbar-search { width: 180px; }
+            .training-grid { grid-template-columns: 1fr; }
+            .stats-row { grid-template-columns: repeat(2,1fr); }
+        }
+        /* scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+
+        /* Tabs */
+        .tabs { display: flex; gap: 4px; margin-bottom: 20px; background: var(--bg); border-radius: 12px; padding: 4px; }
+        .tab-btn {
+            padding: 9px 18px; border: none; border-radius: 10px; cursor: pointer;
+            font-size: 0.84rem; font-weight: 600; background: none; color: var(--text-light);
+            transition: all 0.2s; font-family: inherit;
+        }
+        .tab-btn.active { background: #fff; color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .tab-btn:hover { color: var(--text); }
+    </style>
+</head>
+<body>
+
+<!-- ===== LOGIN ===== -->
+<div class="login-page" id="loginPage">
+    <div class="login-box">
+        <div class="login-logo">🏗️</div>
+        <h1>Барилгын Компани</h1>
+        <p class="subtitle">Дотоод мэдээллийн портал</p>
+        <div class="form-group">
+            <label>Нэвтрэх нэр</label>
+            <input type="text" id="loginUser" placeholder="Хэрэглэгчийн нэр">
+        </div>
+        <div class="form-group">
+            <label>Нууц үг</label>
+            <input type="password" id="loginPass" placeholder="Нууц үг" onkeypress="if(event.key==='Enter')doLogin()">
+        </div>
+        <button class="login-btn" onclick="doLogin()">🔐 Нэвтрэх</button>
+        <div class="login-error" id="loginError">Нэвтрэх нэр эсвэл нууц үг буруу байна!</div>
+        <div class="login-hint">
+            <strong>Анхны админ:</strong> admin / admin123
+        </div>
+    </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div class="app" id="app">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="brand-icon">🏗️</div>
+            <h2>Барилгын Компани</h2>
+            <p>Дотоод портал</p>
+        </div>
+        <div class="sidebar-user" id="sidebarUser"></div>
+        <div class="nav-section">
+            <div class="nav-label">ҮНДСЭН ЦЭС</div>
+            <button class="nav-btn active" data-page="dashboard"><span class="nav-icon">🏠</span> Нүүр хуудас</button>
+            <button class="nav-btn" data-page="training"><span class="nav-icon">🎓</span> Сургалт<span class="nav-badge" id="navTrainCount">0</span></button>
+            <button class="nav-btn" data-page="posts"><span class="nav-icon">📰</span> Мэдээлэл<span class="nav-badge" id="navPostCount">0</span></button>
+        </div>
+        <div class="nav-section" id="adminNav" style="display:none;">
+            <div class="nav-label">АДМИН</div>
+            <button class="nav-btn" data-page="users"><span class="nav-icon">👥</span> Хэрэглэгч удирдах</button>
+        </div>
+        <button class="logout-btn" onclick="doLogout()">🚪 Гарах</button>
+    </aside>
+
+    <!-- Main -->
+    <div class="main-content">
+        <div class="topbar">
+            <div class="topbar-left">
+                <button class="menu-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+                <span class="page-title" id="pageTitle">🏠 Нүүр хуудас</span>
+            </div>
+            <div class="topbar-search">
+                <span>🔍</span>
+                <input type="text" placeholder="Хайх..." id="globalSearch" oninput="onSearch()">
+            </div>
+        </div>
+
+        <div class="page-content">
+            <!-- Dashboard -->
+            <div class="page active" id="pageDashboard">
+                <div class="stats-row">
+                    <div class="stat-card"><div class="stat-icon bg-orange">🎓</div><div><h3 id="dStat1">0</h3><p>Нийт сургалт</p></div></div>
+                    <div class="stat-card"><div class="stat-icon bg-blue">📰</div><div><h3 id="dStat2">0</h3><p>Нийт мэдээлэл</p></div></div>
+                    <div class="stat-card"><div class="stat-icon bg-green">👥</div><div><h3 id="dStat3">0</h3><p>Хэрэглэгчид</p></div></div>
+                    <div class="stat-card"><div class="stat-icon bg-purple">📎</div><div><h3 id="dStat4">0</h3><p>Нийт файл</p></div></div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><h3>📢 Сүүлийн мэдээлэл</h3></div>
+                    <div class="card-body" id="dashRecent"></div>
+                </div>
+            </div>
+
+            <!-- Training Page -->
+            <div class="page" id="pageTraining">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+                    <div class="tabs" id="trainCatTabs"></div>
+                    <button class="btn btn-primary" id="btnAddTraining" style="display:none;" onclick="openTrainingModal()">➕ Сургалт нэмэх</button>
+                </div>
+                <div class="training-grid" id="trainingGrid"></div>
+                <div class="empty" id="trainingEmpty" style="display:none;">
+                    <div class="e-icon">📚</div>
+                    <h3>Сургалт байхгүй</h3>
+                    <p>Шинэ сургалт нэмнэ үү</p>
+                </div>
+                <!-- Training Detail -->
+                <div id="trainingDetail" style="display:none;">
+                    <button class="detail-back" onclick="closeTrainingDetail()">← Буцах</button>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 id="tdTitle"></h3>
+                            <div id="tdActions"></div>
+                        </div>
+                        <div class="card-body">
+                            <p id="tdDesc" style="font-size:0.88rem;color:var(--text-light);margin-bottom:18px;"></p>
+                            <div id="tdFiles"></div>
+                        </div>
+                    </div>
+                    <!-- Training comments -->
+                    <div class="card" style="margin-top:14px;">
+                        <div class="card-header"><h3>💬 Сэтгэгдлүүд</h3></div>
+                        <div class="card-body">
+                            <div id="tdComments"></div>
+                            <div class="comment-form">
+                                <input type="text" id="tdCommentInput" placeholder="Сэтгэгдэл бичих...">
+                                <button class="btn btn-primary btn-sm" onclick="addTrainingComment()">Илгээх</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Posts Page -->
+            <div class="page" id="pagePosts">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+                    <div class="tabs" id="postCatTabs"></div>
+                    <button class="btn btn-primary" onclick="openPostModal()">📝 Мэдээлэл нэмэх</button>
+                </div>
+                <div id="postsContainer"></div>
+                <div class="empty" id="postsEmpty" style="display:none;">
+                    <div class="e-icon">📰</div>
+                    <h3>Мэдээлэл байхгүй</h3>
+                    <p>Шинэ мэдээлэл нэмнэ үү</p>
+                </div>
+            </div>
+
+            <!-- Users Page -->
+            <div class="page" id="pageUsers">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+                    <h2>👥 Хэрэглэгчдийн жагсаалт</h2>
+                    <button class="btn btn-primary" onclick="openUserModal()">➕ Хэрэглэгч нэмэх</button>
+                </div>
+                <div class="card">
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr><th>Нэр</th><th>Нэвтрэх нэр</th><th>Албан тушаал</th><th>Эрх</th><th>Үүсгэсэн</th><th>Үйлдэл</th></tr></thead>
+                            <tbody id="usersTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== MODALS ===== -->
+
+<!-- Add User Modal -->
+<div class="modal-overlay" id="userModal">
+    <div class="modal">
+        <div class="modal-head"><h3>👤 Хэрэглэгч нэмэх</h3><button class="modal-close" onclick="closeModal('userModal')">✕</button></div>
+        <div class="modal-body">
+            <div class="form-group"><label>Овог нэр *</label><input type="text" id="uFullname" placeholder="Бат-Эрдэнэ"></div>
+            <div class="form-group"><label>Нэвтрэх нэр *</label><input type="text" id="uUsername" placeholder="baterdene"></div>
+            <div class="form-group"><label>Нууц үг *</label><input type="password" id="uPassword" placeholder="••••••"></div>
+            <div class="form-group"><label>Албан тушаал</label><input type="text" id="uPosition" placeholder="Инженер"></div>
+            <div class="form-group">
+                <label>Эрх</label>
+                <select id="uRole"><option value="user">Хэрэглэгч</option><option value="admin">Админ</option></select>
+            </div>
+        </div>
+        <div class="modal-foot">
+            <button class="btn btn-secondary" onclick="closeModal('userModal')">Болих</button>
+            <button class="btn btn-primary" onclick="saveUser()">💾 Хадгалах</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Training Modal -->
+<div class="modal-overlay" id="trainingModal">
+    <div class="modal">
+        <div class="modal-head"><h3>🎓 Шинэ сургалт нэмэх</h3><button class="modal-close" onclick="closeModal('trainingModal')">✕</button></div>
+        <div class="modal-body">
+            <div class="form-group"><label>Сургалтын нэр *</label><input type="text" id="tName" placeholder="Барилгын аюулгүй ажиллагаа"></div>
+            <div class="form-group"><label>Тайлбар</label><textarea id="tDesc" placeholder="Сургалтын дэлгэрэнгүй тайлбар..."></textarea></div>
+            <div class="form-group">
+                <label>Ангилал *</label>
+                <select id="tCat">
+                    <option>Барилгын аюулгүй ажиллагаа</option>
+                    <option>Инженерийн зураг төсөл</option>
+                    <option>Чанарын хяналт</option>
+                    <option>Ажлын байрны сургалт</option>
+                    <option>Хөдөлмөр хамгаалал</option>
+                    <option>Техник технологи</option>
+                    <option>Удирдлага менежмент</option>
+                    <option>Бусад</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Файлууд</label>
+                <div class="dropzone" id="tDropzone"><div class="dz-icon">📁</div><p>Файлаа чирч оруулна уу</p></div>
+                <input type="file" id="tFileInput" multiple accept=".ppt,.pptx,.pdf,.doc,.docx,.xls,.xlsx" style="display:none;">
+                <div class="file-list" id="tFileList"></div>
+            </div>
+        </div>
+        <div class="modal-foot">
+            <button class="btn btn-secondary" onclick="closeModal('trainingModal')">Болих</button>
+            <button class="btn btn-primary" onclick="saveTraining()">💾 Хадгалах</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Post Modal -->
+<div class="modal-overlay" id="postModal">
+    <div class="modal">
+        <div class="modal-head"><h3>📝 Мэдээлэл нэмэх</h3><button class="modal-close" onclick="closeModal('postModal')">✕</button></div>
+        <div class="modal-body">
+            <div class="form-group"><label>Гарчиг *</label><input type="text" id="pTitle" placeholder="Мэдээллийн гарчиг"></div>
+            <div class="form-group">
+                <label>Ангилал</label>
+                <select id="pCat">
+                    <option>Мэдэгдэл</option>
+                    <option>Зааварчилгаа</option>
+                    <option>Аюулгүй ажиллагаа</option>
+                    <option>Төсөл</option>
+                    <option>Хурал уулзалт</option>
+                    <option>Ерөнхий мэдээлэл</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Агуулга *</label><textarea id="pContent" rows="8" placeholder="Мэдээллийн агуулга бичнэ үү..."></textarea></div>
+            <div class="form-group" id="pinGroup" style="display:none;">
+                <label><input type="checkbox" id="pPinned"> 📌 Чухал мэдээлэл (дээд талд бэхлэх)</label>
+            </div>
+            <div class="form-group">
+                <label>Хавсралт файл</label>
+                <div class="dropzone" id="pDropzone"><div class="dz-icon">📁</div><p>Файл хавсаргах</p></div>
+                <input type="file" id="pFileInput" multiple style="display:none;">
+                <div class="file-list" id="pFileList"></div>
+            </div>
+        </div>
+        <div class="modal-foot">
+            <button class="btn btn-secondary" onclick="closeModal('postModal')">Болих</button>
+            <button class="btn btn-primary" onclick="savePost()">📤 Нийтлэх</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Files to Training Modal -->
+<div class="modal-overlay" id="addFileModal">
+    <div class="modal">
+        <div class="modal-head"><h3>📎 Файл нэмэх</h3><button class="modal-close" onclick="closeModal('addFileModal')">✕</button></div>
+        <div class="modal-body">
+            <div class="dropzone" id="afDropzone"><div class="dz-icon">📁</div><p>Файлаа чирч оруулна уу</p></div>
+            <input type="file" id="afFileInput" multiple accept=".ppt,.pptx,.pdf,.doc,.docx,.xls,.xlsx" style="display:none;">
+            <div class="file-list" id="afFileList"></div>
+        </div>
+        <div class="modal-foot">
+            <button class="btn btn-secondary" onclick="closeModal('addFileModal')">Болих</button>
+            <button class="btn btn-primary" onclick="saveAddFiles()">💾 Хадгалах</button>
+        </div>
+    </div>
+</div>
+
+<!-- File Viewer -->
+<div class="viewer-overlay" id="viewerOverlay">
+    <div class="viewer-top">
+        <h3 id="viewerTitle"></h3>
+        <button class="btn btn-sm" style="background:rgba(255,255,255,0.15);color:#fff;" onclick="closeViewer()">✕ Хаах</button>
+    </div>
+    <div class="viewer-frame" id="viewerFrame"></div>
+</div>
+
+<script>
+const STORE='constructionPortal';
+const catColors=['#E67E22','#2980B9','#27AE60','#E74C3C','#8E44AD','#16A085','#D35400','#2C3E50'];
+const catGrads=['grad-orange','grad-blue','grad-green','grad-red','grad-purple','grad-teal','grad-orange','grad-blue'];
+const catIcons=['🦺','📐','✅','👷','🛡️','⚙️','📊','📋'];
+const postCatColors=['#E74C3C','#2980B9','#F39C12','#27AE60','#8E44AD','#16A085'];
+
+let DB=loadDB();
+let curUser=null;
+let tFiles=[], pFiles=[], afFiles=[];
+let curTrainId=null, curTrainFilter='all', curPostFilter='all';
+
+function loadDB(){
+    const s=localStorage.getItem(STORE);
+    if(s) return JSON.parse(s);
+    return {
+        users:[{id:'u1',username:'admin',password:'admin123',fullname:'Админ',position:'Системийн админ',role:'admin',createdAt:new Date().toISOString()}],
+        trainings:[], posts:[], comments:[]
+    };
+}
+function saveDB(){
+    const clone=JSON.parse(JSON.stringify(DB));
+    clone.trainings.forEach(t=>t.files.forEach(f=>delete f.blobUrl));
+    clone.posts.forEach(p=>{if(p.files) p.files.forEach(f=>delete f.blobUrl);});
+    localStorage.setItem(STORE,JSON.stringify(clone));
+}
+function toast(m,t='ok'){const e=document.createElement('div');e.className='toast toast-'+t;e.textContent=m;document.body.appendChild(e);setTimeout(()=>e.remove(),3000);}
+function fmtDate(d){return new Date(d).toLocaleDateString('mn-MN',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});}
+function fmtSize(b){if(b<1024)return b+'B';if(b<1048576)return(b/1024).toFixed(1)+'KB';return(b/1048576).toFixed(1)+'MB';}
+function fileIcon(n){const e=n.split('.').pop().toLowerCase();return{ppt:'📙',pptx:'📙',pdf:'📕',doc:'📘',docx:'📘',xls:'📗',xlsx:'📗'}[e]||'📄';}
+function closeModal(id){document.getElementById(id).classList.remove('active');}
+function openModal(id){document.getElementById(id).classList.add('active');}
+function getInitials(n){return n.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();}
+function getCatCI(cat,list){const trainCats=['Барилгын аюулгүй ажиллагаа','Инженерийн зураг төсөл','Чанарын хяналт','Ажлын байрны сургалт','Хөдөлмөр хамгаалал','Техник технологи','Удирдлага менежмент','Бусад'];const i=trainCats.indexOf(cat);return i>=0?i%catColors.length:0;}
+function getPostCI(cat){const cats=['Мэдэгдэл','Зааварчилгаа','Аюулгүй ажиллагаа','Төсөл','Хурал уулзалт','Ерөнхий мэдээлэл'];const i=cats.indexOf(cat);return i>=0?i%postCatColors.length:0;}
+
+// ===== LOGIN =====
+function doLogin(){
+    const u=document.getElementById('loginUser').value.trim();
+    const p=document.getElementById('loginPass').value;
+    const user=DB.users.find(x=>x.username===u&&x.password===p);
+    if(!user){document.getElementById('loginError').style.display='block';return;}
+    document.getElementById('loginError').style.display='none';
+    curUser=user;
+    sessionStorage.setItem('curUser',JSON.stringify(user));
+    showApp();
+}
+function doLogout(){curUser=null;sessionStorage.removeItem('curUser');document.getElementById('app').classList.remove('active');document.getElementById('loginPage').style.display='flex';document.getElementById('loginUser').value='';document.getElementById('loginPass').value='';}
+function showApp(){
+    document.getElementById('loginPage').style.display='none';
+    document.getElementById('app').classList.add('active');
+    document.getElementById('sidebarUser').innerHTML=`
+        <div class="avatar" style="background:${curUser.role==='admin'?'var(--primary)':'var(--accent)'}">${getInitials(curUser.fullname)}</div>
+        <div class="user-info"><h4>${curUser.fullname}</h4><p>${curUser.role==='admin'?'🔑 Админ':'👤 Хэрэглэгч'} • ${curUser.position||''}</p></div>`;
+    document.getElementById('adminNav').style.display=curUser.role==='admin'?'block':'none';
+    document.getElementById('btnAddTraining').style.display=curUser.role==='admin'?'inline-flex':'none';
+    document.getElementById('pinGroup').style.display=curUser.role==='admin'?'block':'none';
+    setupNav();
+    renderAll();
+}
+
+// ===== NAVIGATION =====
+function setupNav(){
+    document.querySelectorAll('.nav-btn[data-page]').forEach(btn=>{
+        btn.onclick=()=>{
+            document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+            btn.classList.add('active');
+            const pg=btn.dataset.page;
+            document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+            document.getElementById('page'+pg.charAt(0).toUpperCase()+pg.slice(1)).classList.add('active');
+            const titles={dashboard:'🏠 Нүүр хуудас',training:'🎓 Сургалт',posts:'📰 Мэдээлэл',users:'👥 Хэрэглэгч удирдах'};
+            document.getElementById('pageTitle').textContent=titles[pg]||'';
+            if(pg==='training') closeTrainingDetail();
+            document.getElementById('sidebar').classList.remove('open');
+        };
+    });
+}
+
+// ===== RENDER =====
+function renderAll(){renderDashboard();renderTraining();renderPosts();renderUsers();}
+
+function renderDashboard(){
+    document.getElementById('dStat1').textContent=DB.trainings.length;
+    document.getElementById('dStat2').textContent=DB.posts.length;
+    document.getElementById('dStat3').textContent=DB.users.length;
+    document.getElementById('dStat4').textContent=DB.trainings.reduce((s,t)=>s+t.files.length,0);
+    document.getElementById('navTrainCount').textContent=DB.trainings.length;
+    document.getElementById('navPostCount').textContent=DB.posts.length;
+    const recent=DB.posts.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,5);
+    document.getElementById('dashRecent').innerHTML=recent.length?recent.map(p=>`<div style="padding:10px 0;border-bottom:1px solid var(--border);"><strong>${p.title}</strong><span style="float:right;font-size:0.75rem;color:var(--text-light);">${fmtDate(p.createdAt)}</span><br><span style="font-size:0.8rem;color:var(--text-light);">${p.content.substring(0,100)}...</span></div>`).join(''):'<p style="color:var(--text-light);text-align:center;padding:20px;">Мэдээлэл байхгүй</p>';
+}
+
+// ===== TRAINING =====
+function renderTraining(){
+    const cats=['all','Барилгын аюулгүй ажиллагаа','Инженерийн зураг төсөл','Чанарын хяналт','Ажлын байрны сургалт','Хөдөлмөр хамгаалал','Техник технологи','Удирдлага менежмент','Бусад'];
+    const tabEl=document.getElementById('trainCatTabs');
+    tabEl.innerHTML=cats.map(c=>`<button class="tab-btn ${curTrainFilter===c?'active':''}" onclick="curTrainFilter='${c.replace(/'/g,"\'")}';renderTraining();">${c==='all'?'Бүгд':c}</button>`).join('');
+
+    let list=[...DB.trainings].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+    const search=document.getElementById('globalSearch').value.toLowerCase();
+    if(curTrainFilter!=='all') list=list.filter(t=>t.category===curTrainFilter);
+    if(search) list=list.filter(t=>t.name.toLowerCase().includes(search)||t.description.toLowerCase().includes(search));
+
+    const grid=document.getElementById('trainingGrid');
+    const empty=document.getElementById('trainingEmpty');
+    if(list.length===0){grid.innerHTML='';empty.style.display='block';}
+    else{
+        empty.style.display='none';
+        grid.innerHTML=list.map(t=>{
+            const ci=getCatCI(t.category);
+            return`<div class="training-card" onclick="openTrainingDetail('${t.id}')">
+                <div class="training-thumb ${catGrads[ci]}">${catIcons[ci]||'📚'}<div class="t-badge">📎 ${t.files.length} файл</div></div>
+                <div class="training-body"><h3>${t.name}</h3><p>${(t.description||'').substring(0,80)}</p>
+                <div class="training-footer"><span class="t-cat" style="background:${catColors[ci]}">${t.category}</span><span class="t-date">${fmtDate(t.createdAt)}</span></div></div>
+            </div>`;
+        }).join('');
+    }
+}
+
+function openTrainingModal(){tFiles=[];document.getElementById('tName').value='';document.getElementById('tDesc').value='';document.getElementById('tFileList').innerHTML='';openModal('trainingModal');}
+function saveTraining(){
+    const name=document.getElementById('tName').value.trim();
+    const desc=document.getElementById('tDesc').value.trim();
+    const cat=document.getElementById('tCat').value;
+    if(!name){toast('Нэр оруулна уу!','err');return;}
+    const t={id:'t_'+Date.now(),name,description:desc,category:cat,files:tFiles.map(f=>({id:'f_'+Date.now()+'_'+Math.random().toString(36).substr(2,5),name:f.name,size:f.size,type:f.type,blobUrl:URL.createObjectURL(f)})),views:0,createdBy:curUser.id,createdAt:new Date().toISOString()};
+    DB.trainings.push(t);saveDB();closeModal('trainingModal');renderAll();toast('✅ Сургалт нэмэгдлээ!');
+}
+function openTrainingDetail(id){
+    const t=DB.trainings.find(x=>x.id===id);if(!t)return;
+    curTrainId=id; t.views=(t.views||0)+1; saveDB();
+    document.getElementById('trainingGrid').style.display='none';
+    document.getElementById('trainingEmpty').style.display='none';
+    document.getElementById('trainCatTabs').style.display='none';
+    document.getElementById('btnAddTraining').style.display='none';
+    document.getElementById('trainingDetail').style.display='block';
+    document.getElementById('tdTitle').textContent=t.name;
+    document.getElementById('tdDesc').textContent=t.description||t.category;
+    document.getElementById('tdActions').innerHTML=curUser.role==='admin'?`<button class="btn btn-sm btn-outline" onclick="openAddFileModal()">📎 Файл нэмэх</button> <button class="btn btn-sm btn-danger" onclick="deleteTraining('${t.id}')">🗑️ Устгах</button>`:'';
+    renderTrainingFiles(t);
+    renderTrainingComments(t.id);
+}
+function closeTrainingDetail(){
+    curTrainId=null;
+    document.getElementById('trainingDetail').style.display='none';
+    document.getElementById('trainingGrid').style.display='grid';
+    document.getElementById('trainCatTabs').style.display='flex';
+    if(curUser&&curUser.role==='admin') document.getElementById('btnAddTraining').style.display='inline-flex';
+    renderTraining();
+}
+function renderTrainingFiles(t){
+    const el=document.getElementById('tdFiles');
+    if(t.files.length===0){el.innerHTML='<div class="empty"><div class="e-icon">📂</div><p>Файл байхгүй</p></div>';return;}
+    const ci=getCatCI(t.category);
+    el.innerHTML=t.files.map(f=>{
+        const isPdf=f.name.toLowerCase().endsWith('.pdf');
+        const isPpt=f.name.toLowerCase().endsWith('.ppt')||f.name.toLowerCase().endsWith('.pptx');
+        return`<div class="material-item">
+            <div class="mat-icon ${catGrads[ci]}">${fileIcon(f.name)}</div>
+            <div class="mat-info"><h4>${f.name}</h4><p>${f.name.split('.').pop().toUpperCase()} • ${fmtSize(f.size)}</p></div>
+            <div class="mat-actions">
+                ${f.blobUrl?`<button class="btn btn-primary btn-sm" onclick="viewFile('${f.blobUrl}','${f.name.replace(/'/g,"\'")}')">👁️ Үзэх</button>`:`<span style="font-size:0.75rem;color:var(--text-light);">⚠️ Дахин ачаалсан</span>`}
+                ${curUser.role==='admin'?`<button class="btn btn-danger btn-sm" onclick="removeTrainingFile('${t.id}','${f.id}')">🗑️</button>`:''}
+            </div></div>`;
+    }).join('');
+}
+function removeTrainingFile(tid,fid){const t=DB.trainings.find(x=>x.id===tid);if(!t)return;t.files=t.files.filter(f=>f.id!==fid);saveDB();renderTrainingFiles(t);renderAll();toast('🗑️ Файл устгагдлаа!');}
+function deleteTraining(id){if(!confirm('Устгах уу?'))return;DB.trainings=DB.trainings.filter(t=>t.id!==id);DB.comments=DB.comments.filter(c=>c.targetId!==id);saveDB();closeTrainingDetail();renderAll();toast('🗑️ Сургалт устгагдлаа!');}
+function openAddFileModal(){afFiles=[];document.getElementById('afFileList').innerHTML='';openModal('addFileModal');}
+function saveAddFiles(){
+    if(!curTrainId||afFiles.length===0){toast('Файл сонгоно уу!','err');return;}
+    const t=DB.trainings.find(x=>x.id===curTrainId);if(!t)return;
+    afFiles.forEach(f=>{t.files.push({id:'f_'+Date.now()+'_'+Math.random().toString(36).substr(2,5),name:f.name,size:f.size,type:f.type,blobUrl:URL.createObjectURL(f)});});
+    saveDB();closeModal('addFileModal');renderTrainingFiles(t);renderAll();toast('✅ Файл нэмэгдлээ!');
+}
+
+// ===== COMMENTS =====
+function renderTrainingComments(tid){
+    const cmts=DB.comments.filter(c=>c.targetId===tid).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+    const el=document.getElementById('tdComments');
+    el.innerHTML=cmts.length?cmts.map(c=>{
+        const u=DB.users.find(x=>x.id===c.userId);
+        const name=u?u.fullname:'Unknown';
+        const canDel=curUser.id===c.userId||curUser.role==='admin';
+        return`<div class="comment-item"><div class="comment-avatar" style="background:${catColors[Math.abs(name.charCodeAt(0))%catColors.length]};color:#fff;">${getInitials(name)}</div><div class="comment-body"><span class="c-name">${name}</span> <span class="c-date">${fmtDate(c.createdAt)}</span><div class="c-text">${c.text}</div>${canDel?`<button class="c-delete" onclick="delComment('${c.id}','training')">🗑️ Устгах</button>`:''}</div></div>`;
+    }).join(''):'<p style="color:var(--text-light);font-size:0.85rem;">Сэтгэгдэл байхгүй</p>';
+}
+function addTrainingComment(){
+    const inp=document.getElementById('tdCommentInput');const text=inp.value.trim();if(!text)return;
+    DB.comments.push({id:'c_'+Date.now(),targetId:curTrainId,targetType:'training',userId:curUser.id,text,createdAt:new Date().toISOString()});
+    saveDB();inp.value='';renderTrainingComments(curTrainId);toast('💬 Сэтгэгдэл нэмэгдлээ!');
+}
+function renderPostComments(pid){
+    const cmts=DB.comments.filter(c=>c.targetId===pid).sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+    return cmts.map(c=>{
+        const u=DB.users.find(x=>x.id===c.userId);const name=u?u.fullname:'Unknown';
+        const canDel=curUser&&(curUser.id===c.userId||curUser.role==='admin');
+        return`<div class="comment-item"><div class="comment-avatar" style="background:${catColors[Math.abs(name.charCodeAt(0))%catColors.length]};color:#fff;">${getInitials(name)}</div><div class="comment-body"><span class="c-name">${name}</span> <span class="c-date">${fmtDate(c.createdAt)}</span><div class="c-text">${c.text}</div>${canDel?`<button class="c-delete" onclick="delComment('${c.id}','post')">🗑️ Устгах</button>`:''}</div></div>`;
+    }).join('')||'<p style="color:var(--text-light);font-size:0.85rem;">Сэтгэгдэл байхгүй</p>';
+}
+function addPostComment(pid){
+    const inp=document.getElementById('pc_'+pid);const text=inp.value.trim();if(!text)return;
+    DB.comments.push({id:'c_'+Date.now(),targetId:pid,targetType:'post',userId:curUser.id,text,createdAt:new Date().toISOString()});
+    saveDB();inp.value='';renderPosts();toast('💬 Сэтгэгдэл нэмэгдлээ!');
+}
+function delComment(cid,type){DB.comments=DB.comments.filter(c=>c.id!==cid);saveDB();if(type==='training'&&curTrainId)renderTrainingComments(curTrainId);else renderPosts();toast('🗑️ Устгагдлаа!');}
+
+// ===== POSTS =====
+function renderPosts(){
+    const postCats=['all','Мэдэгдэл','Зааварчилгаа','Аюулгүй ажиллагаа','Төсөл','Хурал уулзалт','Ерөнхий мэдээлэл'];
+    document.getElementById('postCatTabs').innerHTML=postCats.map(c=>`<button class="tab-btn ${curPostFilter===c?'active':''}" onclick="curPostFilter='${c.replace(/'/g,"\'")}';renderPosts();">${c==='all'?'Бүгд':c}</button>`).join('');
+
+    let list=[...DB.posts];
+    const search=document.getElementById('globalSearch').value.toLowerCase();
+    if(curPostFilter!=='all') list=list.filter(p=>p.category===curPostFilter);
+    if(search) list=list.filter(p=>p.title.toLowerCase().includes(search)||p.content.toLowerCase().includes(search));
+    list.sort((a,b)=>{if(a.pinned&&!b.pinned)return -1;if(!a.pinned&&b.pinned)return 1;return new Date(b.createdAt)-new Date(a.createdAt);});
+
+    const container=document.getElementById('postsContainer');
+    const empty=document.getElementById('postsEmpty');
+    if(list.length===0){container.innerHTML='';empty.style.display='block';}
+    else{
+        empty.style.display='none';
+        container.innerHTML=list.map(p=>{
+            const u=DB.users.find(x=>x.id===p.createdBy);const name=u?u.fullname:'Unknown';
+            const ci=getPostCI(p.category);
+            const cmtCount=DB.comments.filter(c=>c.targetId===p.id).length;
+            const canDel=curUser&&(curUser.id===p.createdBy||curUser.role==='admin');
+            const hasFiles=p.files&&p.files.length>0;
+            return`<div class="post-card ${p.pinned?'pinned':''}">
+                <div class="post-header">
+                    <div class="post-avatar" style="background:${catColors[Math.abs(name.charCodeAt(0))%catColors.length]};color:#fff;">${getInitials(name)}</div>
+                    <div class="post-meta"><h4>${name}</h4><div class="meta-line">${u?u.position||'':''} • ${fmtDate(p.createdAt)}${p.pinned?'<span class="pin-badge">📌 Бэхэлсэн</span>':''}</div></div>
+                    ${canDel?`<button class="btn btn-danger btn-sm" onclick="deletePost('${p.id}')">🗑️</button>`:''}
+                </div>
+                <div class="post-content">
+                    <span class="post-cat-badge" style="background:${postCatColors[ci]}">${p.category}</span>
+                    <h3>${p.title}</h3>
+                    <div class="post-text">${p.content}</div>
+                    ${hasFiles?`<div style="margin-top:12px;">${p.files.map(f=>`<div class="file-item" style="margin-top:4px;"><span class="f-icon">${fileIcon(f.name)}</span><span class="f-name">${f.name}</span>${f.blobUrl?`<button class="btn btn-sm btn-outline" onclick="viewFile('${f.blobUrl}','${f.name.replace(/'/g,"\'")}')">👁️ Үзэх</button>`:''}</div>`).join('')}</div>`:''}
+                </div>
+                <div class="post-actions">
+                    <button onclick="toggleComments('${p.id}')">💬 Сэтгэгдэл (${cmtCount})</button>
+                    ${curUser&&curUser.role==='admin'?`<button onclick="togglePin('${p.id}')">${p.pinned?'📌 Бэхлэг буулгах':'📌 Бэхлэх'}</button>`:''}
+                </div>
+                <div class="comments-section" id="cs_${p.id}">
+                    <h4>💬 Сэтгэгдлүүд</h4>
+                    <div id="cmts_${p.id}">${renderPostComments(p.id)}</div>
+                    <div class="comment-form">
+                        <input type="text" id="pc_${p.id}" placeholder="Сэтгэгдэл бичих..." onkeypress="if(event.key==='Enter')addPostComment('${p.id}')">
+                        <button class="btn btn-primary btn-sm" onclick="addPostComment('${p.id}')">Илгээх</button>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+    }
+}
+function openPostModal(){pFiles=[];document.getElementById('pTitle').value='';document.getElementById('pContent').value='';document.getElementById('pPinned').checked=false;document.getElementById('pFileList').innerHTML='';openModal('postModal');}
+function savePost(){
+    const title=document.getElementById('pTitle').value.trim();const content=document.getElementById('pContent').value.trim();
+    const cat=document.getElementById('pCat').value;const pinned=document.getElementById('pPinned').checked;
+    if(!title||!content){toast('Гарчиг болон агуулга оруулна уу!','err');return;}
+    const p={id:'p_'+Date.now(),title,content,category:cat,pinned:curUser.role==='admin'?pinned:false,
+        files:pFiles.map(f=>({id:'f_'+Date.now()+'_'+Math.random().toString(36).substr(2,5),name:f.name,size:f.size,type:f.type,blobUrl:URL.createObjectURL(f)})),
+        createdBy:curUser.id,createdAt:new Date().toISOString()};
+    DB.posts.push(p);saveDB();closeModal('postModal');renderAll();toast('✅ Мэдээлэл нийтлэгдлээ!');
+}
+function deletePost(id){if(!confirm('Устгах уу?'))return;DB.posts=DB.posts.filter(p=>p.id!==id);DB.comments=DB.comments.filter(c=>c.targetId!==id);saveDB();renderAll();toast('🗑️ Устгагдлаа!');}
+function togglePin(id){const p=DB.posts.find(x=>x.id===id);if(!p)return;p.pinned=!p.pinned;saveDB();renderPosts();}
+function toggleComments(id){document.getElementById('cs_'+id).classList.toggle('open');}
+
+// ===== USERS =====
+function renderUsers(){
+    const tb=document.getElementById('usersTable');
+    tb.innerHTML=DB.users.map(u=>`<tr>
+        <td><strong>${u.fullname}</strong></td><td>${u.username}</td><td>${u.position||'-'}</td>
+        <td><span style="padding:3px 8px;border-radius:6px;font-size:0.75rem;font-weight:600;color:#fff;background:${u.role==='admin'?'var(--primary)':'var(--accent)'}">${u.role==='admin'?'🔑 Админ':'👤 Хэрэглэгч'}</span></td>
+        <td style="font-size:0.8rem;color:var(--text-light);">${fmtDate(u.createdAt)}</td>
+        <td>${u.id!=='u1'?`<button class="btn btn-danger btn-sm" onclick="deleteUser('${u.id}')">🗑️</button>`:''}</td>
+    </tr>`).join('');
+}
+function openUserModal(){document.getElementById('uFullname').value='';document.getElementById('uUsername').value='';document.getElementById('uPassword').value='';document.getElementById('uPosition').value='';document.getElementById('uRole').value='user';openModal('userModal');}
+function saveUser(){
+    const fn=document.getElementById('uFullname').value.trim();const un=document.getElementById('uUsername').value.trim();
+    const pw=document.getElementById('uPassword').value;const pos=document.getElementById('uPosition').value.trim();
+    const role=document.getElementById('uRole').value;
+    if(!fn||!un||!pw){toast('Бүх шаардлагатай талбарыг бөглөнө үү!','err');return;}
+    if(DB.users.find(u=>u.username===un)){toast('Энэ нэвтрэх нэр бүртгэлтэй байна!','err');return;}
+    DB.users.push({id:'u_'+Date.now(),username:un,password:pw,fullname:fn,position:pos,role,createdAt:new Date().toISOString()});
+    saveDB();closeModal('userModal');renderUsers();renderAll();toast('✅ Хэрэглэгч нэмэгдлээ!');
+}
+function deleteUser(id){if(!confirm('Устгах уу?'))return;DB.users=DB.users.filter(u=>u.id!==id);saveDB();renderUsers();renderAll();toast('🗑️ Устгагдлаа!');}
+
+// ===== FILE VIEWER =====
+function viewFile(url,name){
+    document.getElementById('viewerTitle').textContent=name;
+    const frame=document.getElementById('viewerFrame');
+    const isPdf=name.toLowerCase().endsWith('.pdf');
+    if(isPdf){
+        frame.innerHTML=`<iframe src="${url}#toolbar=0&navpanes=0&scrollbar=1"></iframe>`;
+    } else {
+        frame.innerHTML=`<div class="no-viewer"><div class="nv-icon">${fileIcon(name)}</div><h3 style="color:#fff;margin-bottom:8px;">${name}</h3><p style="color:rgba(255,255,255,0.7);margin-bottom:16px;">Энэ файлыг browser дээр шууд үзэх боломжгүй байна.<br>Татаж аваад нээнэ үү.</p><a href="${url}" download="${name}" class="btn btn-primary">⬇️ Татаж авах</a></div>`;
+    }
+    document.getElementById('viewerOverlay').classList.add('active');
+}
+function closeViewer(){document.getElementById('viewerOverlay').classList.remove('active');document.getElementById('viewerFrame').innerHTML='';}
+
+// ===== DROPZONE =====
+function setupDZ(dzId, inpId, listId, getArr, setArr){
+    const dz=document.getElementById(dzId);const inp=document.getElementById(inpId);
+    dz.addEventListener('click',()=>inp.click());
+    dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('dragover');});
+    dz.addEventListener('dragleave',()=>dz.classList.remove('dragover'));
+    dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('dragover');addFiles(e.dataTransfer.files,listId,getArr);});
+    inp.addEventListener('change',e=>{addFiles(e.target.files,listId,getArr);});
+}
+function addFiles(files,listId,arr){
+    const el=document.getElementById(listId);
+    for(const f of files){
+        arr.push(f);
+        const d=document.createElement('div');d.className='file-item';
+        d.innerHTML=`<span class="f-icon">${fileIcon(f.name)}</span><span class="f-name">${f.name}</span><span class="f-size">${fmtSize(f.size)}</span><button class="f-remove" onclick="this.parentElement.remove()">✕</button>`;
+        el.appendChild(d);
+    }
+}
+
+// ===== SEARCH =====
+function onSearch(){
+    const pg=document.querySelector('.page.active');
+    if(pg.id==='pageTraining') renderTraining();
+    else if(pg.id==='pagePosts') renderPosts();
+}
+
+// ===== INIT =====
+setupDZ('tDropzone','tFileInput','tFileList',tFiles);
+setupDZ('pDropzone','pFileInput','pFileList',pFiles);
+setupDZ('afDropzone','afFileInput','afFileList',afFiles);
+
+// Auto-login from session
+const saved=sessionStorage.getItem('curUser');
+if(saved){curUser=JSON.parse(saved);const freshUser=DB.users.find(u=>u.id===curUser.id);if(freshUser){curUser=freshUser;showApp();}else{sessionStorage.removeItem('curUser');}}
+</script>
+</body>
+</html>
